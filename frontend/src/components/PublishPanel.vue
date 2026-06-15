@@ -66,12 +66,30 @@
         </div>
       </div>
     </div>
+    <!-- 发布历史 -->
+    <div class="publish-history">
+      <button class="btn btn-small btn-outline" @click="toggleHistory">
+        {{ historyExpanded ? '收起历史' : '查看发布历史' }}
+      </button>
+      <div v-if="historyExpanded" class="history-list">
+        <div v-if="historyList.length === 0" class="history-empty">暂无发布记录</div>
+        <div v-for="h in historyList" :key="h.id" class="history-item">
+          <span class="history-icon">{{ h.status === 'recalled' ? '↩️' : '✅' }}</span>
+          <div class="history-body">
+            <span class="history-platform">{{ platformName(h.platform) }}</span>
+            <span class="history-title">{{ h.rawContent?.title || '无标题' }}</span>
+          </div>
+          <span class="history-time">{{ formatTime(h.createdAt) }}</span>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, type PropType } from 'vue'
+import { defineComponent, computed, ref, type PropType } from 'vue'
 import { Platform, type PublishResult } from '../types'
+import { fetchHistory } from '../api'
 
 const NAME_MAP: Record<string, string> = {
   [Platform.WECHAT]: '公众号',
@@ -99,6 +117,8 @@ export default defineComponent({
   emits: ['publish', 'recall', 'recallAll', 'edit', 'update:selectedPlatforms'],
   setup(props, { emit }) {
     const platforms = PLATFORMS
+    const historyExpanded = ref(false)
+    const historyList = ref<any[]>([])
 
     const platformName = (p: Platform) => NAME_MAP[p] || p
 
@@ -111,6 +131,18 @@ export default defineComponent({
         current.splice(idx, 1)
       }
       emit('update:selectedPlatforms', current)
+    }
+
+    const toggleHistory = async () => {
+      historyExpanded.value = !historyExpanded.value
+      if (historyExpanded.value) {
+        try {
+          const res = await fetchHistory()
+          historyList.value = res.data || []
+        } catch {
+          historyList.value = []
+        }
+      }
     }
 
     const hasSuccessResults = computed(() =>
@@ -131,7 +163,7 @@ export default defineComponent({
       const d = new Date(iso)
       return d.toLocaleString('zh-CN')
     }
-    return { platforms, platformName, formatTime, hasSuccessResults, statusIcon, togglePlatform }
+    return { platforms, platformName, formatTime, hasSuccessResults, statusIcon, togglePlatform, historyExpanded, historyList, toggleHistory }
   },
 })
 </script>
@@ -359,5 +391,72 @@ export default defineComponent({
 .btn-info:hover {
   background: rgba(40, 140, 200, 0.52);
   transform: translateY(-1px);
+}
+
+/* 发布历史 */
+.publish-history {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.history-empty {
+  font-size: 14px;
+  color: rgba(160, 210, 180, 0.5);
+  text-align: center;
+  padding: 16px;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.history-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.history-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.history-platform {
+  font-size: 14px;
+  font-weight: 600;
+  color: #a0e8c0;
+}
+
+.history-title {
+  font-size: 13px;
+  color: rgba(160, 210, 180, 0.6);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-time {
+  font-size: 12px;
+  color: rgba(140, 190, 160, 0.4);
+  flex-shrink: 0;
 }
 </style>
