@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { publishService } from '../services/publish.service';
 import { PublishRequest, RawContent } from '../types';
 
@@ -198,5 +198,14 @@ function syncEnvFromSettings() {
   if (c.bilibili.accessToken) process.env.BILIBILI_ACCESS_TOKEN = c.bilibili.accessToken;
   if (c.xiaohongshu.accessToken) process.env.XIAOHONGSHU_ACCESS_TOKEN = c.xiaohongshu.accessToken;
 }
+
+// 统一错误处理中间件
+router.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  console.error('[API Error]', err);
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || '服务器内部错误',
+  });
+});
 
 export default router;
