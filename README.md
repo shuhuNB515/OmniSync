@@ -4,6 +4,10 @@
 
 很多创作者需要在公众号、知乎、B站、小红书等平台同步发布内容，但格式适配很麻烦。OmniSync 帮助创作者提升发布效率和便捷性。
 
+## Demo 视频
+
+[点击观看 Demo 视频](https://www.bilibili.com/video/)（待上传）
+
 ## 功能特性
 
 - **一次编辑，多端适配**：输入内容后自动适配各平台格式与风格（标题长度、内容格式、图片要求等）
@@ -45,6 +49,38 @@ OmniSync/
         ├── types/            # 类型定义
         └── index.ts          # 入口文件
 ```
+
+## 第三方依赖
+
+### 前端（frontend）
+
+| 依赖 | 版本 | 用途 |
+|------|------|------|
+| [Vue](https://vuejs.org/) | ^3.4.0 | 前端框架，构建用户界面 |
+| [Vite](https://vitejs.dev/) | ^5.1.0 | 构建工具，开发服务器与打包 |
+| [TypeScript](https://www.typescriptlang.org/) | ^5.3.3 | 类型安全的 JavaScript 超集 |
+| [@vitejs/plugin-vue](https://github.com/vitejs/vite-plugin-vue) | ^5.0.0 | Vite 的 Vue 插件 |
+| [vue-tsc](https://github.com/vuejs/language-tools) | ^2.0.0 | Vue TypeScript 类型检查 |
+
+### 后端（backend）
+
+| 依赖 | 版本 | 用途 |
+|------|------|------|
+| [Express](https://expressjs.com/) | ^4.18.2 | Web 服务框架，提供 API 接口 |
+| [CORS](https://github.com/expressjs/cors) | ^2.8.5 | 跨域资源共享中间件 |
+| [dotenv](https://github.com/motdotla/dotenv) | ^17.4.2 | 环境变量加载 |
+| [TypeScript](https://www.typescriptlang.org/) | ^5.3.3 | 类型安全的 JavaScript 超集 |
+| [tsx](https://github.com/privatenumber/tsx) | ^4.7.0 | TypeScript 执行器，开发时使用 |
+
+### 原创功能说明
+
+本项目基于上述第三方框架和工具构建，**所有业务逻辑均为原创**，包括：
+
+- **策略模式适配器架构**：`BaseAdapter` 抽象基类 + 各平台适配器的完整设计与实现
+- **格式自动适配引擎**：各平台标题截断、内容格式转换、媒体过滤的适配逻辑
+- **双模式发布系统**：模拟模式与真实模式的切换机制
+- **前端交互界面**：内容编辑器、平台选择器、预览面板、发布面板、凭证配置面板的全部 UI 和交互逻辑
+- **API 请求层**：前后端通信、错误处理、凭证管理的完整实现
 
 ## 扩展新平台的架构设计
 
