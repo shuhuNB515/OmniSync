@@ -11,7 +11,7 @@
         placeholder="输入文章标题..."
         maxlength="100"
       />
-      <span class="char-count">{{ rawContent.title.length }}/100</span>
+      <span class="char-count">已输入 {{ titleLength }} 字</span>
     </div>
 
     <!-- 正文 (Markdown) -->
@@ -22,7 +22,7 @@
         placeholder="在此输入正文，支持 Markdown 格式..."
         rows="10"
       ></textarea>
-      <span class="char-count">{{ rawContent.content.length }} 字</span>
+      <span class="char-count">已输入 {{ contentLength }} 字</span>
     </div>
 
     <!-- 图片 -->
@@ -93,7 +93,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, computed } from 'vue'
 
 export default defineComponent({
   name: 'ContentEditor',
@@ -103,5 +103,17 @@ export default defineComponent({
     canPreview: { type: Boolean, default: false },
   },
   emits: ['addTag', 'removeTag', 'addImage', 'removeImage', 'preview', 'resetAll', 'update:tagInput'],
+  setup(props) {
+    const titleLength = computed(() => props.rawContent?.title?.length || 0);
+    const contentLength = computed(() => props.rawContent?.content?.length || 0);
+    return { titleLength, contentLength };
+  },
 })
 </script>
+
+<style scoped>
+.char-count {
+  font-size: 12px;
+  color: #999;
+}
+</style>
