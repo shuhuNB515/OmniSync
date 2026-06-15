@@ -15,4 +15,5 @@ Thumbs.db
 
 # Build output
 frontend/dist/
+frontend/.vite/
 backend/dist/
