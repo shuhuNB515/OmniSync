@@ -7,12 +7,18 @@ const BASE = import.meta.env.VITE_API_BASE || '/api';
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
   let res: Response;
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
     res = await fetch(url, {
       headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
       ...options,
     });
+    clearTimeout(timeoutId);
   } catch (err) {
-    // 网络错误（后端未启动或无法连接）
+    if (err instanceof DOMException && err.name === 'AbortError') {
+      throw new Error('请求超时，请检查网络连接或稍后重试');
+    }
     if (err instanceof TypeError) {
       throw new Error('无法连接到后端服务，请确认后端已启动（运行 npm run dev:backend）');
     }
