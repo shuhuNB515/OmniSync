@@ -1,7 +1,8 @@
 import type { PlatformMeta, RawContent, AdaptedContent, PublishResult, PublishResponse } from '../types';
 import { Platform } from '../types';
 
-const BASE = '/api';
+// 生产环境使用后端实际地址，开发环境走 Vite 代理
+const BASE = import.meta.env.VITE_API_BASE || '/api';
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
   let res: Response;
