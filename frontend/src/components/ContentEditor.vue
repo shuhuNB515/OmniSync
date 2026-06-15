@@ -11,7 +11,7 @@
         placeholder="输入文章标题..."
         maxlength="100"
       />
-      <span class="char-count">{{ rawContent.title.length }}/100</span>
+      <span class="char-count">已输入 {{ rawContent.title.length }} 字</span>
     </div>
 
     <!-- 正文 (Markdown) -->
@@ -22,7 +22,7 @@
         placeholder="在此输入正文，支持 Markdown 格式..."
         rows="10"
       ></textarea>
-      <span class="char-count">{{ rawContent.content.length }} 字</span>
+      <span class="char-count">已输入 {{ rawContent.content.length }} 字</span>
     </div>
 
     <!-- 图片 -->
