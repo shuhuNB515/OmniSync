@@ -40,7 +40,7 @@ export abstract class BaseAdapter {
   }
 
   /** 初始化配置（在子类meta可用后调用） */
-  protected initConfig(): void {
+  initConfig(): void {
     const id = this.meta.id.toUpperCase();
     this.config = {
       ...this.config,
@@ -141,7 +141,11 @@ export abstract class BaseAdapter {
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({ error: '请求失败' }));
-      throw new Error(err.error || `HTTP ${res.status}`);
+      const message = err && typeof err === 'object' && 'error' in err
+        && typeof err.error === 'string' && err.error
+        ? err.error
+        : `HTTP ${res.status}`;
+      throw new Error(message);
     }
     return res.json();
   }

@@ -117,11 +117,6 @@ export class PublishService {
     // 用新内容重新适配
     const adaptedContent = adapter.adapt(newRawContent);
 
-    // 先撤回旧记录
-    oldRecord.status = 'recalled';
-    oldRecord.recalledAt = new Date().toISOString();
-    oldRecord.result.message = '已被新版本替换';
-
     // 重新发布
     try {
       const result = await adapter.publish(adaptedContent);
@@ -140,9 +135,14 @@ export class PublishService {
           createdAt: result.publishedAt || new Date().toISOString(),
         };
         this.history.set(newRecordId, newRecord);
+
+        // 新版本发布成功后再更新旧记录，失败时保留原发布状态。
+        oldRecord.status = 'recalled';
+        oldRecord.recalledAt = new Date().toISOString();
+        oldRecord.result.message = '已被新版本替换';
       }
 
-      return { success: true, message: '编辑重发成功', result };
+      return { success: result.success, message: result.success ? '编辑重发成功' : result.message, result };
     } catch (err: any) {
       return { success: false, message: `编辑重发失败: ${err.message}` };
     }
