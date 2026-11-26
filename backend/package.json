@@ -4,6 +4,7 @@
   "description": "OmniSync - 多平台内容发布工具后端",
   "main": "dist/index.js",
   "scripts": {
+    "test": "tsx --test test/*.test.ts",
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js"
