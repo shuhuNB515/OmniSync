@@ -80,8 +80,15 @@ router.post('/edit', async (req: Request, res: Response) => {
     });
   }
 
-  const result = await publishService.editAndRepublish(recordId, newRawContent);
-  res.json(result);
+  try {
+    const result = await publishService.editAndRepublish(recordId, newRawContent);
+    return res.json(result);
+  } catch (err: any) {
+    return res.status(500).json({
+      success: false,
+      message: err.message || '编辑重发服务异常',
+    });
+  }
 });
 
 /** GET /api/history — 获取所有发布历史 */
@@ -167,7 +174,15 @@ router.post('/settings', (req: Request, res: Response) => {
   res.json({
     success: true,
     message: `已${currentSettings.liveMode ? '切换到真实发布' : '切换到模拟'}模式`,
-    data: currentSettings,
+    data: {
+      ...currentSettings,
+      credentials: {
+        wechat: maskCreds(currentSettings.credentials.wechat),
+        zhihu: maskCreds(currentSettings.credentials.zhihu),
+        bilibili: maskCreds(currentSettings.credentials.bilibili),
+        xiaohongshu: maskCreds(currentSettings.credentials.xiaohongshu),
+      },
+    },
   });
 });
 

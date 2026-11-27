@@ -1,16 +1,36 @@
+// 必须在业务模块导入前加载环境变量（.env 文件）
+import 'dotenv/config';
+
 import express from 'express';
 import cors from 'cors';
 import apiRoutes from './routes/api';
 
-// 加载环境变量（.env 文件）
-import 'dotenv/config';
-
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// 中间件
-app.use(cors());
+// CORS 限制：默认仅放行本地开发前端，可通过 CORS_ORIGIN 配置白名单（逗号分隔）
+const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:5173,http://127.0.0.1:5173')
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean);
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+  })
+);
 app.use(express.json({ limit: '10mb' }));
+
+// 可选 API Key 鉴权（设置 OMNISYNC_API_KEY 后启用）
+app.use('/api', (req, res, next) => {
+  const apiKey = process.env.OMNISYNC_API_KEY;
+  if (!apiKey) return next();
+  const provided = req.header('x-api-key');
+  if (provided !== apiKey) {
+    return res.status(401).json({ success: false, message: '未授权的请求' });
+  }
+  return next();
+});
 
 // API路由
 app.use('/api', apiRoutes);
